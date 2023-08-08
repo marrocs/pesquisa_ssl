@@ -1,0 +1,171 @@
+TAREFA:
+
+1) estudar sobre automatização de emissão e instalação de certificado digital ssl;
+
+2) Procurar as melhores praticas do mercado, protocolo ACME, e instalação;
+
+3) Fazer um piloto;
+
+----------------------------------------------------------
+
+SUMARIO
+
+1) O que é SSL;
+
+2) Como funciona um certificado SSL;
+
+3) Como gerar um certificado SSL;
+
+4) Como implementar;
+
+5) Automação;
+
+6) Melhores práticas do mercado;
+
+7) Protocolo ACME;
+
+------------------------------------------------------------
+
+
+
+-----> 1 - O QUE É SSL <-----
+
+SSL é a sigla para "Secure Sockets Layer";
+
+O termo faz referência tanto a um protocolo quanto a um documento;
+
+O Documento é um certificado que atesta a autenticidade de uma ou mais páginas WEB, além de determinar a criptografa da comunicação entre um cliente e um servidor;
+
+Seu uso pode ser constatado a partir do cadeado fechado na barra de endereços do navegador e a comunicação feita através dele é chamada de HTTPS;
+
+Ao atestar a legitimidade do site, o SSL impede dificulta ataques de falsificação de endereço;
+
+Ao criptografar a comunicação entre cliente e servidor, o SSL dificulta ataques do tipo MITM;
+
+A versão mais recente do SSL se chama TLS (Transport Layer Security) e o processo de verificação dos certificados é chamado de "Handshake TLS";
+
+É comum usar SSL e TLS para se referir ao mesmo protocolo/serviço (https);
+
+Existem seis tipos de certificados SSL, que variam de acordo com preço, amplitude de domínios certificados e rigorosidade na avaliação do certificado pela autoridade de certificação;
+ 
+
+
+-----> 2 - COMO O SSL FUNCIONA <-----
+
+Um certificado TLS possui uma chave pública e uma chave privada;
+
+
+
+Após o TCP HANDSHAKE, é iniciado o TLS HANDSHAKE;
+
+No TLS HANDSHAKE são definidos: Versão do protocolo; conjunto de cifras; Autenticidade do servidor; Chave simétrica para comunicação;
+
+Após o TCP HANDSHAKE:
+	cliente envia: ClientHello; 
+	servidor responde: ServerHello + Certificado + ServerHelloDone; 
+	cliente responde: ClientKeyExchange + ChangeCipherSpec + Finished;
+	servidor termina: ChangeCipherSpec + Finished;
+
+O componente do navegador Web PKI (Public Key Infrastructure) é o responsavel por interagir com o certificado;
+
+
+
+-----> 3 - Gerando um certificado SSL <-----
+
+Para gerar um certificado SSL (ref.8):
+
+    $openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out certificado.crt -keyout chave.key    
+
+    
+    Onde:
+
+        '-newkey rsa:4096': Cria uma chave RSA de 4096 bits para o certificado,  RSA 2048 é o padrão mais recente do OpenSSL
+
+        '-x509': Cria um certificado auto assinado;
+    
+        'sha256': Gera a requisição ao certificado usando SHA256;
+
+        '-days': determina o tempo de vida em dias do certificado;
+
+        '-nodes': Cria um certificado que não precisa de senha (sem esta opção, você terá que entrar a senha no terminal toda vez que a aplicação for reiniciada);
+
+É recomendavel restringir as permissões da chave para que apenas o root tenha acesso (chmod 400 ./chave.key)
+
+É recomendável também realizar o backup imediato da chave.key;
+
+
+
+-----> 4 - Como instalar o certificado <-----
+
+
+
+-----> 5 - Automatizando do processo <-----
+
+Existem diversos protocolos de automação, dentre eles o ACME (Automated Certificate Management Enviroment) se destaca;
+
+É descrito pela RFC8555, documento da IETF (Internet Engineering Task Force);
+
+O protocolo foi projetado pelo ISRG (Internet Security Research Group) e busca oferecer um canal de comunicação direto com uma autoridade certificadora para emitir, instalar, revogar e renovar certificados SSL;
+
+O potocolo ACME foi desenvolvido para uso da própria Autoridade Certificadora do ISRG (Lets Encrypt);
+
+A Let's Encrypt recomenda o uso do Certbot ACME Client (Free e OpenSource);
+
+O Certbot possui uma série de instruções variadas para cada tipo de aplicação rodando em cada tipo de servidor;
+
+
+
+-----> 6 - Melhores práticas <-----
+
+De acordo com IndusFace (ref.10):
+
+	1 - Escolher uma CA confiável;
+	2 - Escolher o tipo de certificado mais apropriado;
+	3 - Gerar e guardar chaves privadas; 
+	4 - Configurar corretamente o servidor;
+	5 - Realizar gerenciamento apropriado;
+
+
+Para KeyFactor (ref.11):
+
+	1 - Conhecer a importancia dos certificados TLS;
+	2 - Centralizar o inventário de certificados;
+	3 - Definir responsabilidades e políticas;
+	4 - Focar em detecção e prevenção;
+	5 - Adotar automação;	
+
+------------------------------------------------------------
+
+-----> PERGUNTAS <-----
+
+Quais outras formas de promover a geração automatica de certificados alem do ACME/LetsEncrypt ?
+
+Há uma fonte "neutra" (que não seja uma empresa querendo vender seu produto) sobre assuntos de tecnologia?
+
+Após ter o certificado autenticado pela CA, como instalar ele no site?
+
+------------------------------------------------------------
+
+-----> REFERENCIAS <-----
+
+1 - https://www.kaspersky.com.br/resource-center/definitions/what-is-a-ssl-certificate
+
+2 - https://www.cloudflare.com/pt-br/learning/ssl/what-happens-in-a-tls-handshake/
+
+3 - https://www.globalsign.com/pt-br/acme-automated-certificate-management
+
+4 - https://datatracker.ietf.org/doc/html/rfc8555
+
+5 - https://letsencrypt.org/getting-started/
+
+6 - https://certbot.eff.org/instructions
+
+7 - https://www.linode.com/docs/guides/create-a-self-signed-tls-certificate/
+
+8 - https://linuxconfig.org/how-to-generate-a-self-signed-ssl-certificate-on-linux
+
+9 - https://www.digicert.com/kb/ssl-certificate-installation.htm
+
+10 - https://www.indusface.com/blog/ssl-tls-certificate-best-practices-for-2021-and-beyond/
+
+11 - https://www.keyfactor.com/blog/nist-tls-certificate-management/
